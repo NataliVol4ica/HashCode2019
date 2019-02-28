@@ -15,6 +15,10 @@ namespace HashCode2019
         public bool IsHorizontal { get; private set; }
         public bool IsUsed { get; set; }
 
+        public long Min { get; private set; }
+
+        public long Max { get; private set; }
+
         public Photo(string type, int index)
         {
             IsUsed = false;
@@ -25,6 +29,13 @@ namespace HashCode2019
                 IsHorizontal = false;
             IntTags = new List<long>();
             StringTags = new List<string>();
+        }
+
+        public void OrderTags()
+        {
+           IntTags = IntTags.OrderBy(num => num).ToList();
+            Min = IntTags[0];
+            Max = IntTags[IntTags.Count - 1];
         }
     }
 }

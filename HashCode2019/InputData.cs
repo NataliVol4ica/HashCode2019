@@ -52,6 +52,7 @@ namespace HashCode2019
                 P.StringTags.Add(data[i]);
                 P.IntTags.Add(TagToInt(data[i]));
             }
+            P.OrderTags();
             if (P.IsHorizontal)
                 Horizontals.Add(P);
             else

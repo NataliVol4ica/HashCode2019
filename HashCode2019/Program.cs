@@ -53,7 +53,8 @@ namespace HashCode2019
         }
 
         static void LegacyDataPrint()
-        { PrintData(pathA);
+        {
+            PrintData(pathA);
             PrintData(pathB);
             PrintData(pathC);
             PrintData(pathD);
