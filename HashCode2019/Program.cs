@@ -9,6 +9,7 @@ namespace HashCode2019
 {
     class Program
     {
+        #region files
         static string pathA = @"D:\HashCode2019\a_example.txt";
         static string pathB = @"D:\HashCode2019\b_lovely_landscapes.txt";
         static string pathC = @"D:\HashCode2019\c_memorable_moments.txt";
@@ -20,6 +21,8 @@ namespace HashCode2019
         static string ansC = @"D:\HashCode2019\c_ans.txt";
         static string ansD = @"D:\HashCode2019\d_ans.txt";
         static string ansE = @"D:\HashCode2019\e_ans.txt";
+        #endregion
+
         static void PrintData(string path)
         {
             int size;
@@ -61,14 +64,11 @@ namespace HashCode2019
             PrintData(pathE);
         }       
 
-
-        static void CalcGroup(IEnumerable<Photo> Photos, List<Photo> answer, int tagNum)
+        static List<Photo> LegacyCalc(IEnumerable<Photo> Photos, int tagNum)
         {
-            Console.WriteLine("Group size is {0}", Photos.Count());
+            var answer = new List<Photo>();
             int halfTagNum = tagNum / 2;
             bool foundMatch = false;
-            /*foreach (var p in Photos)
-                p.IsUsed = false;*/
             try
             {
                 while (true)
@@ -95,27 +95,78 @@ namespace HashCode2019
             }
             catch
             {
-                Console.WriteLine("Finished for {0}", /*Photos.First().IntTags.Count*/ tagNum);
+                Console.WriteLine("Finished for {0}", tagNum);
             }
+            return answer;
         }
-        static void Main()
+
+        public static Task<List<Photo>> CalculateTagGroupTask()
+        {
+            return Task.Run(() =>
+            {
+                List<Photo> answer = new List<Photo>();
+                return answer;
+
+            });
+        }
+        static void AsyncCalculations(InputData input, List<TagInfo> tagNums )
+        {
+            var tasks = new List<Task>();
+            for (int i = 0; i < tagNums.Count; i++)
+            {
+                tasks.Add(CalculateTagGroupTask());
+            }
+            Task.WaitAll(tasks.ToArray());
+        }
+
+        static public List<Photo> CalculateTagGroup(List<Photo> photos, int tagNum)
         {
             var answer = new List<Photo>();
+            Console.WriteLine("Began calculations for {0} photos with tag number {1}", photos.Count, tagNum);
+            answer = LegacyCalc(photos, tagNum);
+            Console.WriteLine("Finished {0} photos with tag number {1}", photos.Count, tagNum);
+            return answer;
+        }
+        static List<Photo> ParallelCalculations(InputData input, List<int> tagNums)
+        {
+            Console.WriteLine("I am at parallel");
+            //            var midAnswer = Enumerable.Repeat(new List<Photo>(), tagNums.Count).ToList();
+            var midAnswer = tagNums
+                .Select(n => Tuple.Create(input.AllPhotos.Where(photo => photo.TagNum == n), n))
+                .AsParallel()
+                .Select(tuple => CalculateTagGroup(tuple.Item1.ToList(), tuple.Item2))
+                .ToList();
+            var answer = midAnswer
+                .SelectMany(ans => ans.Select(n=>n))
+                .ToList();
+            return answer;
+        }
+
+        public struct TagInfo
+        {
+            public int tagNum;
+            public int index;
+        };
+
+        static void Main()
+        {
             var input = new InputData();
             input.Read(pathB);
             Console.WriteLine(input.Count);
-            //List<Photo> sorted = input.AllPhotos.OrderByDescending(photo => photo.IntTags.Count).ToList();
-            List<int> tagNums = input.AllPhotos
-                .Select(photo => photo.IntTags.Count)
+
+            /*var tagNums = input.AllPhotos
+                .Select((photo, i) => new TagInfo { tagNum = photo.TagNum, index = i })
                 .Distinct()
                 .OrderByDescending(tagNum => tagNum)
-                .ToList();
-            foreach (var t in tagNums)
-            {
-                var CurList = input.AllPhotos.Where(photo => photo.IntTags.Count == t);
-                CalcGroup(CurList, answer, t);
-            }
-            Tools.PrintAnswer(answer, ansB);
+                .ToList();*/
+            var tagNums1 = input.AllPhotos
+               .Select(photo =>photo.TagNum)
+               .Distinct()
+               .OrderByDescending(tagNum => tagNum)
+               .ToList();
+            List<List<Photo>> answer = Enumerable.Repeat(new List<Photo>(), tagNums1.Count).ToList();
+            var ans = ParallelCalculations(input, tagNums1);
+            Tools.PrintAnswer(ans, ansB);
             Console.ReadLine();
         }
     }

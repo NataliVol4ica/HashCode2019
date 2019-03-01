@@ -8,34 +8,55 @@ namespace HashCode2019
 {
     class Photo
     {
+        #region Properties
         public int Index { get; private set; }
-        public List<string> StringTags { get; private set; }
         public List<long> IntTags { get; private set; }
-
         public bool IsHorizontal { get; private set; }
-        public bool IsUsed { get; set; }
-
+        public bool HasLeft { get; private set; }
+        public bool HasRight { get; private set; }
         public long Min { get; private set; }
-
         public long Max { get; private set; }
+        public int TagNum { get; private set; }
+        public bool IsUsed { get; set; } // legacy
+        #endregion
 
-        public Photo(string type, int index)
+        public Photo(int index)
         {
-            IsUsed = false;
-            Index = index;
-            if (type == "H")
-                IsHorizontal = true;
-            else
-                IsHorizontal = false;
             IntTags = new List<long>();
-            StringTags = new List<string>();
+            IsUsed = false;
+            HasLeft = false;
+            HasRight = false;
+            Index = index;           
         }
-
-        public void OrderTags()
+        public void ParseLine(string line)
         {
-           IntTags = IntTags.OrderBy(num => num).ToList();
+            string[] data = line.Split(' ');
+            IsHorizontal = data[0] == "H" ? true : false;
+            TagNum = Convert.ToInt32(data[1]);
+            for (int i = 2; i < TagNum; i++)
+                IntTags.Add(TagToInt(data[i]));
+            IntTags = IntTags.OrderBy(num => num).ToList();
             Min = IntTags[0];
             Max = IntTags[IntTags.Count - 1];
         }
+
+        public void FoundLeft()
+        {
+            HasLeft = false;
+        }
+        public void FoundRight()
+        {
+            HasRight = false;
+        }
+        
+        #region static
+        static long TagToInt(string tag)
+        {
+            long ans = 0;
+            foreach (char c in tag)
+                ans = (ans << 8) + (int)c;
+            return ans;
+        }
+        #endregion
     }
 }

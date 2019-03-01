@@ -30,29 +30,11 @@ namespace HashCode2019
                     AddPhoto(sr.ReadLine(), i);
             }
         }
-
-        static long TagToInt(string tag)
-        {
-            long ans = 0;
-            foreach (char c in tag)
-                ans = (ans << 8) + (int)c;
-            return ans;
-        }
-
+        
         public void AddPhoto(string line, int index)
         {
-            string[] data = line.Split(' ');
-            int tagNum = Convert.ToInt32(data[1]);
-            if (tagNum == 1)
-                return;
-            var P = new Photo(data[0], index);
-
-            for (int i = 2; i < tagNum; i++)
-            {
-                P.StringTags.Add(data[i]);
-                P.IntTags.Add(TagToInt(data[i]));
-            }
-            P.OrderTags();
+            var P = new Photo(index);
+            P.ParseLine(line);
             if (P.IsHorizontal)
                 Horizontals.Add(P);
             else
