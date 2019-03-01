@@ -21,7 +21,7 @@ namespace HashCode2019
             //if not enough checks left return ?
             int ans = 0;
             int i = 0, j = 0;
-            while (i < left.IntTags.Count && j < left.IntTags.Count)
+            while (i < left.IntTags.Count && j < right.IntTags.Count)
             {
                 if (left.IntTags[i] < right.IntTags[j])
                     i++;

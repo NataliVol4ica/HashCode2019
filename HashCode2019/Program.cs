@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace HashCode2019
 {
@@ -47,6 +48,8 @@ namespace HashCode2019
 
             var links = new List<Link>();
             int interest;
+            var sw = new Stopwatch();
+            sw.Start();
             for (int i = 0; i < input.AllPhotos.Count - 1; i++)
             {
                 for (int j = i + 1; j < input.AllPhotos.Count; j++)
@@ -60,7 +63,11 @@ namespace HashCode2019
                         links.Add(new Link(left.Index, right.Index, interest));
                 }
                 if (i % 100 == 1)
-                    Console.WriteLine("{0} / {1}", i, input.AllPhotos.Count - 1);
+                {
+                    sw.Stop();
+                    Console.WriteLine("{0} / {1} | {2}", i, input.AllPhotos.Count - 1, sw.Elapsed);
+                    sw.Restart();
+                }
             }
             Console.WriteLine("Ordering the link list");
             links = links.OrderByDescending(link => link.interest).ToList();
