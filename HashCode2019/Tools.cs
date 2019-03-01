@@ -38,7 +38,7 @@ namespace HashCode2019
             return ans;
         }
 
-        public static void PrintAnswer(List<Photo> ans, string path)
+        public static void SaveAnswer(List<Photo> ans, string path)
         {
             using (StreamWriter sw = new StreamWriter(path))
             {
@@ -46,6 +46,46 @@ namespace HashCode2019
                 foreach (var a in ans)
                     sw.WriteLine(a.Index);
             }
+        }
+
+        public static int CountProfit(List<string> tags1, List<string> tags2)
+        {
+            int intersectCount = tags1.Intersect(tags2).Count();
+            int leftDifCount = tags1.Except(tags2).Count();
+            int rightDifCount = tags2.Except(tags1).Count();
+            var values = new List<int> { intersectCount, leftDifCount, rightDifCount };
+            return values.Min();
+        }
+
+        public static void AnalyzeAnswer(string testPath, string ansPath)
+        {
+            int totalProfit = 0;
+            List<List<string>> inpData;
+            using (StreamReader sr = new StreamReader(testPath))
+            {
+                int lineNumber = Convert.ToInt32(sr.ReadLine());
+                inpData = new List<List<string>>();
+                for (int i = 0; i < lineNumber; i++)
+                {
+                    var data = sr.ReadLine().Split(' ').ToList();
+                    inpData.Add(data.GetRange(2, data.Count - 2));
+                }
+            }
+            List<int> ansData;
+            using (StreamReader sr = new StreamReader(ansPath))
+            {
+                int lineNumber = Convert.ToInt32(sr.ReadLine());
+                ansData = new List<int>();
+                for (int i = 0; i < lineNumber; i++)
+                    ansData.Add(Convert.ToInt32(sr.ReadLine()));
+            }
+            for (int i = 0; i < ansData.Count - 1; i++)
+            {
+                totalProfit += CountProfit(inpData[ansData[i]], inpData[ansData[i + 1]]);
+                if (i % 1000 == 1)
+                    Console.WriteLine(i);
+            }
+            Console.WriteLine("Total profit: {0}", totalProfit);
         }
     }
 }

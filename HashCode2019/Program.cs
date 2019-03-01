@@ -110,7 +110,6 @@ namespace HashCode2019
             }
             catch
             {
-                Console.WriteLine("Finished for {0}", tagNum);
             }
             return answer;
         }
@@ -145,9 +144,9 @@ namespace HashCode2019
         static public List<Photo> CalculateTagGroup(List<Photo> photos, int tagNum)
         {
             var answer = new List<Photo>();
-            Console.WriteLine("Began calculations for {0} photos with tag number {1}", photos.Count, tagNum);
+            Console.WriteLine("{1} X {0} Started", photos.Count, tagNum);
             answer = LegacyCalc(photos, tagNum);
-            Console.WriteLine("Finished {0} photos with tag number {1}", photos.Count, tagNum);
+            Console.WriteLine(">> {1} X {0} Finished", photos.Count, tagNum);
             return answer;
         }
         static List<Photo> ParallelCalculations(InputData input, List<int> tagNums)
@@ -182,15 +181,10 @@ namespace HashCode2019
 
         static void Main()
         {
-            var input = new InputData();
+            /*var input = new InputData();
             input.Read(pathB);
             Console.WriteLine(input.Count);
-
-            /*var tagNums = input.AllPhotos
-                .Select((photo, i) => new TagInfo { tagNum = photo.TagNum, index = i })
-                .Distinct()
-                .OrderByDescending(tagNum => tagNum)
-                .ToList();*/
+            
             var tagNums1 = input.AllPhotos
                .Select(photo =>photo.TagNum)
                .Distinct()
@@ -198,7 +192,8 @@ namespace HashCode2019
                .ToList();
             List<List<Photo>> answer = Enumerable.Repeat(new List<Photo>(), tagNums1.Count).ToList();
             var ans = ParallelCalculations(input, tagNums1);
-            Tools.PrintAnswer(ans, ansB);
+            Tools.SaveAnswer(ans, ansB);*/
+            Tools.AnalyzeAnswer(pathB, ansB);
             Console.ReadLine();
         }
     }
