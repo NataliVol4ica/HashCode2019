@@ -51,7 +51,7 @@ namespace HashCode2019
         {
             long ans = 0;
             foreach (char c in tag)
-                ans = (ans << 8) + (int)c;
+                ans = (ans << 6) + Tools.CharToInt(c);
             return ans;
         }
         #endregion
