@@ -7,194 +7,78 @@ using System.Threading.Tasks;
 
 namespace HashCode2019
 {
+    //TODO
+    //inside the group:
+    //find number of each tag uniqueity
+    //count uniqueity coefficient for every photo
+    //order them by
+    
+
+        //for links
+        //count num of how many times meets every vershina. if both 1 - put anywhere. ...
+
+    class Link
+    {
+        public int slide1;
+        public int slide2;
+        public int interest;
+        public Link(int slide1, int slide2, int interest)
+        {
+            this.slide1 = slide1;
+            this.slide2 = slide2;
+            this.interest = interest;
+        }
+        public override string ToString()
+        {
+            return String.Format("{0} {1} {2}", slide1, slide2, interest);
+        }
+    }
+    class Chain
+    {
+        List<int> slides;
+    }
     class Program
     {
-        const int MaxGroupSize = 1000;
-        #region files
-        static string pathA = @"D:\HashCode2019\a_example.txt";
-        static string pathB = @"D:\HashCode2019\b_lovely_landscapes.txt";
-        static string pathC = @"D:\HashCode2019\c_memorable_moments.txt";
-        static string pathD = @"D:\HashCode2019\d_pet_pictures.txt";
-        static string pathE = @"D:\HashCode2019\e_shiny_selfies.txt";
-
-        static string ansA = @"D:\HashCode2019\a_ans.txt";
-        static string ansB = @"D:\HashCode2019\b_ans.txt";
-        static string ansC = @"D:\HashCode2019\c_ans.txt";
-        static string ansD = @"D:\HashCode2019\d_ans.txt";
-        static string ansE = @"D:\HashCode2019\e_ans.txt";
-        #endregion
-
-        static void PrintData(string path)
+        public static void Algo(string testPath, string ansPath)
         {
-            int size;
-            int horizontals = 0;
-            int verticals = 0;
-            int tagNum = 0;
-            int MaxTagSize = 0;
-            using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
+            var input = new InputData();
+            input.Read(testPath);
+            input.OrderPhotosByFirst();
+
+            var links = new List<Link>();
+            int interest;
+            for (int i = 0; i < input.AllPhotos.Count - 1; i++)
             {
-                string line;
-                size = Convert.ToInt32(sr.ReadLine());
-                while ((line = sr.ReadLine()) != null)
+                for (int j = i + 1; j < input.AllPhotos.Count; j++)
                 {
-                    string[] data = line.Split(' ');
-                    if (data[0] == "H")
-                        horizontals++;
-                    else
-                        verticals++;
-                    tagNum += Convert.ToInt32(data[1]);
-                    for (int i = 2; i < data.Count(); i++)
-                        if (data[i].Length > MaxTagSize)
-                            MaxTagSize = data[i].Length;
+                    var left = input.AllPhotos[i];
+                    var right = input.AllPhotos[j];
+                    //because photo array is ordered by first tag
+                    if (left.Max < right.Min)
+                        break;
+                    if ((interest = Tools.CountInterest(left, right)) > 0)
+                        links.Add(new Link(left.Index, right.Index, interest));
                 }
+                if (i % 100 == 1)
+                    Console.WriteLine("{0} / {1}", i, input.AllPhotos.Count - 1);
             }
-            Console.WriteLine("Path {0}", path);
-            Console.WriteLine("Test size = {0}", size);
-            Console.WriteLine("Horizontals = {0}", horizontals);
-            Console.WriteLine("Verticals = {0}", verticals);
-            Console.WriteLine("AVG tag num = {0}", (int)(tagNum/size));
-            Console.WriteLine("Max tag size = {0}", MaxTagSize);
+            Console.WriteLine("Ordering the link list");
+            links = links.OrderByDescending(link => link.interest).ToList();
+            Console.WriteLine("Writing to file");
+            Tools.SaveLinkList(DataAnalyzer.linksB, links);
+            //Console.WriteLine(input.Count);           
+            //DataAnalyzer.AnalyzeAnswer(testPath, ansPath);
         }
-
-        static void LegacyDataPrint()
-        {
-            PrintData(pathA);
-            PrintData(pathB);
-            PrintData(pathC);
-            PrintData(pathD);
-            PrintData(pathE);
-        }
-
-        static List<Photo> LegacyCalc(IEnumerable<Photo> Photos, int tagNum)
-        {
-            var answer = new List<Photo>();
-            int halfTagNum = tagNum / 2;
-            bool foundMatch = false;
-            try
-            {
-                while (true)
-                {
-                    Photo current = Photos.Where(val => val.IsUsed == false).First();
-                    current.IsUsed = true;
-                    answer.Add(current);
-                    while (true)
-                    {
-                        /*try
-                        {
-                            var match = Photos
-                                .Where(p => !p.IsUsed &&
-                                 Math.Abs(tagNum - Tools.CountSameTags(current, p) - halfTagNum) <= 1)
-                                 .First();
-                            answer.Add(match);
-                            match.IsUsed = true;
-                            current = match;
-                        }
-                        catch
-                        {
-                            break;
-                        }*/
-                        foreach (var p in Photos)
-                            if (!p.IsUsed &&
-                                Math.Abs(tagNum - Tools.CountSameTags(current, p) - halfTagNum) <= 1)
-                            {
-                                foundMatch = true;
-                                answer.Add(p);
-                                p.IsUsed = true;
-                                current = p;
-                                break;
-                            }
-                        if (!foundMatch)
-                            break;
-                    }
-                }
-            }
-            catch
-            {
-            }
-            return answer;
-        }
-
-        /*static List<Photo> NewCalc(IEnumerable<Photo> Photos, int tagNum)
-        {
-            var answer = new List<Photo>();
-            int halfTagNum = tagNum / 2;
-            for (int i = 0; i < Photos.Count; i++)
-                for (int j = )
-            return answer;
-        }*/
-        public static Task<List<Photo>> CalculateTagGroupTask()
-        {
-            return Task.Run(() =>
-            {
-                List<Photo> answer = new List<Photo>();
-                return answer;
-
-            });
-        }
-        static void AsyncCalculations(InputData input, List<TagInfo> tagNums )
-        {
-            var tasks = new List<Task>();
-            for (int i = 0; i < tagNums.Count; i++)
-            {
-                tasks.Add(CalculateTagGroupTask());
-            }
-            Task.WaitAll(tasks.ToArray());
-        }
-
-        static public List<Photo> CalculateTagGroup(List<Photo> photos, int tagNum)
-        {
-            var answer = new List<Photo>();
-            Console.WriteLine("{1} X {0} Started", photos.Count, tagNum);
-            answer = LegacyCalc(photos, tagNum);
-            Console.WriteLine(">> {1} X {0} Finished", photos.Count, tagNum);
-            return answer;
-        }
-        static List<Photo> ParallelCalculations(InputData input, List<int> tagNums)
-        {
-            Console.WriteLine("I am at parallel");
-            //            var midAnswer = Enumerable.Repeat(new List<Photo>(), tagNums.Count).ToList();
-            var midAnswer = tagNums
-                .Select((n) => {
-                    int i = 0;
-                    var splitGroups =
-                        from photos in input.AllPhotos
-                        where photos.TagNum == n
-                        group photos by i++ / MaxGroupSize into part
-                        select part.AsEnumerable();
-                    return splitGroups.Select(subGroup => Tuple.Create(subGroup, n));
-                    })
-                .SelectMany(group => group.Select(n=>n))
-                .AsParallel()
-                .Select(tuple => CalculateTagGroup(tuple.Item1.ToList(), tuple.Item2))
-                .ToList();
-            var answer = midAnswer
-                .SelectMany(ans => ans.Select(n=>n))
-                .ToList();
-            return answer;
-        }
-
-        public struct TagInfo
-        {
-            public int tagNum;
-            public int index;
-        };
-
         static void Main()
         {
-            /*var input = new InputData();
-            input.Read(pathB);
-            Console.WriteLine(input.Count);
-            
-            var tagNums1 = input.AllPhotos
-               .Select(photo =>photo.TagNum)
-               .Distinct()
-               .OrderByDescending(tagNum => tagNum)
-               .ToList();
-            List<List<Photo>> answer = Enumerable.Repeat(new List<Photo>(), tagNums1.Count).ToList();
-            var ans = ParallelCalculations(input, tagNums1);
-            Tools.SaveAnswer(ans, ansB);*/
-            Tools.AnalyzeAnswer(pathB, ansB);
-            Console.ReadLine();
+            //Legacy.Algo(DataAnalyzer.pathB, DataAnalyzer.ansB);
+            Algo(DataAnalyzer.pathB, DataAnalyzer.ansB);
+            Console.WriteLine("Press any key");
+            Console.Read();
         }
+
+
+       
+
     }
 }

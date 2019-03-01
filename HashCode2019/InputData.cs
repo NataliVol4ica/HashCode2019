@@ -41,5 +41,10 @@ namespace HashCode2019
                 Verticals.Add(P);
             AllPhotos.Add(P);
         }
+
+        public void OrderPhotosByFirst()
+        {
+            AllPhotos = AllPhotos.OrderBy(photo => photo.IntTags[0]).ToList();
+        }
     }
 }

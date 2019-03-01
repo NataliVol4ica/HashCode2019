@@ -11,9 +11,9 @@ namespace HashCode2019
         #region Properties
         public int Index { get; private set; }
         public List<long> IntTags { get; private set; }
+        public List<string> StringTags { get; private set; }
         public bool IsHorizontal { get; private set; }
-        public Photo Left { get; private set; }
-        public Photo Right { get; private set; }
+        public List<Photo>  Neighbours { get; private set; }
         public long Min { get; private set; }
         public long Max { get; private set; }
         public int TagNum { get; private set; }
@@ -23,6 +23,7 @@ namespace HashCode2019
         public Photo(int index)
         {
             IntTags = new List<long>();
+            StringTags = new List<string>();
             IsUsed = false;
             Index = index;           
         }
@@ -31,22 +32,20 @@ namespace HashCode2019
             string[] data = line.Split(' ');
             IsHorizontal = data[0] == "H" ? true : false;
             TagNum = Convert.ToInt32(data[1]);
-            for (int i = 2; i < TagNum; i++)
+            for (int i = 2; i < data.Count(); i++)
+            {
+                StringTags.Add(data[i]);
                 IntTags.Add(TagToInt(data[i]));
+            }
             IntTags = IntTags.OrderBy(num => num).ToList();
             Min = IntTags[0];
             Max = IntTags[IntTags.Count - 1];
         }
 
-        public void FoundLeft(Photo p)
+        public void FoundNeighbour(Photo p)
         {
-            Left = p;
-        }
-        public void FoundRight(Photo p)
-        {
-            Right = p;
-        }
-        
+            Neighbours.Add(p);
+        }       
         #region static
         static long TagToInt(string tag)
         {

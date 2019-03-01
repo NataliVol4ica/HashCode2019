@@ -9,17 +9,23 @@ namespace HashCode2019
 {
     static class Tools
     {
-        public static int CountSameTags(Photo p1, Photo p2)
+        public static int CharToInt(char c)
         {
-            if (p1.Max < p2.Min || p2.Max < p1.Min)
-                return 0;
+            if (char.IsDigit(c))
+                return (int)c - (int)'0';
+            return (int)c - (int)'a' + 10;
+        }
+        public static int CountSameTags(Photo left, Photo right)
+        {
+            //todo:
+            //if not enough checks left return ?
             int ans = 0;
             int i = 0, j = 0;
-            while (i < p1.IntTags.Count && j < p1.IntTags.Count)
+            while (i < left.IntTags.Count && j < left.IntTags.Count)
             {
-                if (p1.IntTags[i] < p2.IntTags[j])
+                if (left.IntTags[i] < right.IntTags[j])
                     i++;
-                else if (p2.IntTags[j] < p1.IntTags[i])
+                else if (right.IntTags[j] < left.IntTags[i])
                     j++;
                 else
                 {
@@ -28,14 +34,17 @@ namespace HashCode2019
                     ans++;
                 }
             }
-            /*foreach (var tag1 in p1.IntTags)
-                foreach (var tag2 in p2.IntTags)
-                    if (tag1 == tag2)
-                    {
-                        ans++;
-                        break;
-                    }*/
             return ans;
+        }
+
+        public static int CountInterest(Photo p1, Photo p2)
+        {
+            int intersec = CountSameTags(p1, p2);
+            int leftDif = p1.TagNum - intersec;
+            int rightDif = p2.TagNum - intersec;
+            int min = intersec > leftDif ? leftDif : intersec;
+            min = min > rightDif ? rightDif : min;
+            return min;
         }
 
         public static void SaveAnswer(List<Photo> ans, string path)
@@ -48,44 +57,33 @@ namespace HashCode2019
             }
         }
 
-        public static int CountProfit(List<string> tags1, List<string> tags2)
+        static Random random = new Random();
+        public static IEnumerable<T> RandomPermutation<T>(IEnumerable<T> sequence)
         {
-            int intersectCount = tags1.Intersect(tags2).Count();
-            int leftDifCount = tags1.Except(tags2).Count();
-            int rightDifCount = tags2.Except(tags1).Count();
-            var values = new List<int> { intersectCount, leftDifCount, rightDifCount };
-            return values.Min();
-        }
+            T[] retArray = sequence.ToArray();
 
-        public static void AnalyzeAnswer(string testPath, string ansPath)
-        {
-            int totalProfit = 0;
-            List<List<string>> inpData;
-            using (StreamReader sr = new StreamReader(testPath))
+
+            for (int i = 0; i < retArray.Length - 1; i += 1)
             {
-                int lineNumber = Convert.ToInt32(sr.ReadLine());
-                inpData = new List<List<string>>();
-                for (int i = 0; i < lineNumber; i++)
+                int swapIndex = random.Next(i, retArray.Length);
+                if (swapIndex != i)
                 {
-                    var data = sr.ReadLine().Split(' ').ToList();
-                    inpData.Add(data.GetRange(2, data.Count - 2));
+                    T temp = retArray[i];
+                    retArray[i] = retArray[swapIndex];
+                    retArray[swapIndex] = temp;
                 }
             }
-            List<int> ansData;
-            using (StreamReader sr = new StreamReader(ansPath))
+
+            return retArray;
+        }
+        public static void SaveLinkList(string path, List<Link> links)
+        {
+            using (StreamWriter sw = new StreamWriter(path))
             {
-                int lineNumber = Convert.ToInt32(sr.ReadLine());
-                ansData = new List<int>();
-                for (int i = 0; i < lineNumber; i++)
-                    ansData.Add(Convert.ToInt32(sr.ReadLine()));
+                sw.WriteLine(links.Count);
+                foreach (var link in links)
+                    sw.WriteLine(link);
             }
-            for (int i = 0; i < ansData.Count - 1; i++)
-            {
-                totalProfit += CountProfit(inpData[ansData[i]], inpData[ansData[i + 1]]);
-                if (i % 1000 == 1)
-                    Console.WriteLine(i);
-            }
-            Console.WriteLine("Total profit: {0}", totalProfit);
         }
     }
 }
