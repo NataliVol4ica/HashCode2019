@@ -9,6 +9,7 @@ namespace HashCode2019
 {
     class Program
     {
+        const int MaxGroupSize = 1000;
         #region files
         static string pathA = @"D:\HashCode2019\a_example.txt";
         static string pathB = @"D:\HashCode2019\b_lovely_landscapes.txt";
@@ -62,7 +63,7 @@ namespace HashCode2019
             PrintData(pathC);
             PrintData(pathD);
             PrintData(pathE);
-        }       
+        }
 
         static List<Photo> LegacyCalc(IEnumerable<Photo> Photos, int tagNum)
         {
@@ -78,8 +79,22 @@ namespace HashCode2019
                     answer.Add(current);
                     while (true)
                     {
+                        /*try
+                        {
+                            var match = Photos
+                                .Where(p => !p.IsUsed &&
+                                 Math.Abs(tagNum - Tools.CountSameTags(current, p) - halfTagNum) <= 1)
+                                 .First();
+                            answer.Add(match);
+                            match.IsUsed = true;
+                            current = match;
+                        }
+                        catch
+                        {
+                            break;
+                        }*/
                         foreach (var p in Photos)
-                            if (!p.IsUsed && 
+                            if (!p.IsUsed &&
                                 Math.Abs(tagNum - Tools.CountSameTags(current, p) - halfTagNum) <= 1)
                             {
                                 foundMatch = true;
@@ -90,7 +105,7 @@ namespace HashCode2019
                             }
                         if (!foundMatch)
                             break;
-                      }
+                    }
                 }
             }
             catch
@@ -100,6 +115,14 @@ namespace HashCode2019
             return answer;
         }
 
+        /*static List<Photo> NewCalc(IEnumerable<Photo> Photos, int tagNum)
+        {
+            var answer = new List<Photo>();
+            int halfTagNum = tagNum / 2;
+            for (int i = 0; i < Photos.Count; i++)
+                for (int j = )
+            return answer;
+        }*/
         public static Task<List<Photo>> CalculateTagGroupTask()
         {
             return Task.Run(() =>
@@ -132,7 +155,16 @@ namespace HashCode2019
             Console.WriteLine("I am at parallel");
             //            var midAnswer = Enumerable.Repeat(new List<Photo>(), tagNums.Count).ToList();
             var midAnswer = tagNums
-                .Select(n => Tuple.Create(input.AllPhotos.Where(photo => photo.TagNum == n), n))
+                .Select((n) => {
+                    int i = 0;
+                    var splitGroups =
+                        from photos in input.AllPhotos
+                        where photos.TagNum == n
+                        group photos by i++ / MaxGroupSize into part
+                        select part.AsEnumerable();
+                    return splitGroups.Select(subGroup => Tuple.Create(subGroup, n));
+                    })
+                .SelectMany(group => group.Select(n=>n))
                 .AsParallel()
                 .Select(tuple => CalculateTagGroup(tuple.Item1.ToList(), tuple.Item2))
                 .ToList();

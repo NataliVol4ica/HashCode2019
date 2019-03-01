@@ -12,8 +12,8 @@ namespace HashCode2019
         public int Index { get; private set; }
         public List<long> IntTags { get; private set; }
         public bool IsHorizontal { get; private set; }
-        public bool HasLeft { get; private set; }
-        public bool HasRight { get; private set; }
+        public Photo Left { get; private set; }
+        public Photo Right { get; private set; }
         public long Min { get; private set; }
         public long Max { get; private set; }
         public int TagNum { get; private set; }
@@ -24,8 +24,6 @@ namespace HashCode2019
         {
             IntTags = new List<long>();
             IsUsed = false;
-            HasLeft = false;
-            HasRight = false;
             Index = index;           
         }
         public void ParseLine(string line)
@@ -40,13 +38,13 @@ namespace HashCode2019
             Max = IntTags[IntTags.Count - 1];
         }
 
-        public void FoundLeft()
+        public void FoundLeft(Photo p)
         {
-            HasLeft = false;
+            Left = p;
         }
-        public void FoundRight()
+        public void FoundRight(Photo p)
         {
-            HasRight = false;
+            Right = p;
         }
         
         #region static
