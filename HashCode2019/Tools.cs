@@ -57,6 +57,13 @@ namespace HashCode2019
             }
         }
 
+        public static void Swap<T>(ref T a, ref T b)
+        {
+            T c = a;
+            a = b;
+            b = c;
+        }
+
         static Random random = new Random();
         public static IEnumerable<T> RandomPermutation<T>(IEnumerable<T> sequence)
         {

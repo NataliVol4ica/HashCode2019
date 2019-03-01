@@ -99,10 +99,21 @@ namespace HashCode2019
             }
             return links;
         }
+        
         public static void OrderLinks(string path)
         {
             var links = ReadLinks(path);
-            Tools.SaveLinkList(path, links.OrderBy(link => link.interest).ThenBy(link => link.slide1).ThenBy(link=>link.slide2).ToList());
+            foreach(var link in links)
+            {
+                if (link.slide1 > link.slide2)
+                    Tools.Swap(ref link.slide1, ref link.slide2);
+            }
+            Tools.SaveLinkList(path,
+                links
+                .OrderBy(link => link.interest)
+                .ThenBy(link => link.slide1)
+                .ThenBy(link => link.slide2)
+                .ToList());
         }
         public static void CountUniquePhotos(List<Link> links)
         {
@@ -111,10 +122,6 @@ namespace HashCode2019
             {
                 repeats[link.slide1]++;
                 repeats[link.slide2]++;
-                if (link.slide1 == 1 || link.slide2 == 1)
-                {
-                    ;
-                }
             }
             int total = 0;
             for (int i = 0; i < 80000; i++)
