@@ -13,11 +13,15 @@ namespace HashCode2019
     //find number of each tag uniqueity
     //count uniqueity coefficient for every photo
     //order them by
-    
 
-        //for links
-        //count num of how many times meets every vershina. if both 1 - put anywhere. ...
+    //for links
+    //count num of how many times meets every vershina. if both 1 - put anywhere. ...
 
+    struct Pair
+    {
+        public int index;
+        public int amount;
+    }
     class Link
     {
         public int slide1;
@@ -29,9 +33,15 @@ namespace HashCode2019
             this.slide2 = slide2;
             this.interest = interest;
         }
+        public Link(int[] param_s)
+        {
+            slide1 = param_s[0];
+            slide2 = param_s[1];
+            interest = param_s[2];
+        }
         public override string ToString()
         {
-            return String.Format("{0} {1} {2}", slide1, slide2, interest);
+            return String.Format("{0} {1} {2} ", slide1, slide2, interest);
         }
     }
     class Chain
@@ -40,7 +50,7 @@ namespace HashCode2019
     }
     class Program
     {
-        public static void Algo(string testPath, string ansPath)
+        public static void FindLinks(string testPath, string ansPath)
         {
             var input = new InputData();
             input.Read(testPath);
@@ -76,16 +86,66 @@ namespace HashCode2019
             //Console.WriteLine(input.Count);           
             //DataAnalyzer.AnalyzeAnswer(testPath, ansPath);
         }
+        public static List<Link> ReadLinks(string path)
+        {
+            var links = new List<Link>();
+            using (StreamReader sr = new StreamReader(path))
+            {
+                int lineNumber = Convert.ToInt32(sr.ReadLine());
+                for (int i = 0; i < lineNumber; i++)
+                {
+                    links.Add(new Link(sr.ReadLine().Split(' ').Where(val => !String.IsNullOrEmpty(val)).Select(p => Convert.ToInt32(p)).ToArray()));
+                }
+            }
+            return links;
+        }
+        public static void OrderLinks(string path)
+        {
+            var links = ReadLinks(path);
+            Tools.SaveLinkList(path, links.OrderBy(link => link.interest).ThenBy(link => link.slide1).ThenBy(link=>link.slide2).ToList());
+        }
+        public static void CountUniquePhotos(List<Link> links)
+        {
+            var repeats = Enumerable.Repeat(0, 80000).ToList();
+            foreach (var link in links)
+            {
+                repeats[link.slide1]++;
+                repeats[link.slide2]++;
+                if (link.slide1 == 1 || link.slide2 == 1)
+                {
+                    ;
+                }
+            }
+            int total = 0;
+            for (int i = 0; i < 80000; i++)
+            {
+                if (repeats[i] != 0)
+                    total++;
+            }
+            
+            var pairs = new List<Pair>();
+            for (int i = 0; i < 80000; i++)
+                pairs.Add(new Pair { index = i, amount = repeats[i] });
+            pairs = pairs.OrderBy(pair => pair.amount).ThenBy(pair => pair.index).ToList();
+            using (StreamWriter sw = new StreamWriter(@"D:\HashCode2019\temp.txt"))
+            {
+                sw.WriteLine(total);
+                for (int i = 0; i < 80000; i++)
+                {
+                    sw.WriteLine("{0} x {1}", pairs[i].index, pairs[i].amount);
+                }
+            }
+        }
         static void Main()
         {
             //Legacy.Algo(DataAnalyzer.pathB, DataAnalyzer.ansB);
-            Algo(DataAnalyzer.pathB, DataAnalyzer.ansB);
+            //FindLinks(DataAnalyzer.pathB, DataAnalyzer.ansB);
+            OrderLinks(DataAnalyzer.linksB);
+            var links = ReadLinks(DataAnalyzer.linksB);
+            CountUniquePhotos(links);
+
             Console.WriteLine("Press any key");
             Console.Read();
         }
-
-
-       
-
     }
 }
