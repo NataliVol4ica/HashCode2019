@@ -53,13 +53,22 @@ namespace HashCode2019
             return min;
         }
 
-        public static void SaveAnswer(List<Photo> ans, string path)
+        public static void SavePhotoAnswer(List<Photo> ans, string path)
         {
             using (StreamWriter sw = new StreamWriter(path))
             {
                 sw.WriteLine(ans.Count);
                 foreach (var a in ans)
                     sw.WriteLine(a.Index);
+            }
+        }
+        public static void SaveIntAnswer(List<int> ans, string path)
+        {
+            using (StreamWriter sw = new StreamWriter(path))
+            {
+                sw.WriteLine(ans.Count);
+                foreach (var a in ans)
+                    sw.WriteLine(a);
             }
         }
 

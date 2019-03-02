@@ -8,8 +8,8 @@ namespace HashCode2019
 {
     struct IntLinkData
     {
-        public int slide;
-        public int value;
+        public int slideIndex;
+        public int interest;
     }
     class LinkData
     {
@@ -70,11 +70,11 @@ namespace HashCode2019
             _intLinks = Enumerable.Repeat(new List<IntLinkData>(), 80000).ToList();
             foreach (var link in Links)
             {
-                IntLinks[link.slide1].Add(new IntLinkData { slide = link.slide2, value = link.interest });
-                IntLinks[link.slide2].Add(new IntLinkData { slide = link.slide1, value = link.interest });
+                IntLinks[link.slide1].Add(new IntLinkData { slideIndex = link.slide2, interest = link.interest });
+                IntLinks[link.slide2].Add(new IntLinkData { slideIndex = link.slide1, interest = link.interest });
             }
             for (int i = 0; i < VertexNum; i++)
-                _intLinks[i] = _intLinks[i].OrderByDescending(val => val.value).ToList();
+                _intLinks[i] = _intLinks[i].OrderByDescending(val => val.interest).ToList();
         }
         private void CountRepeats()
         {

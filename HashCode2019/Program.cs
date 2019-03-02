@@ -16,59 +16,80 @@ namespace HashCode2019
             enqueued,
             visited
         }
-
-        public struct VertexData
+        public class VertexData: IComparer<VertexData>
         {
+            public int index;
             public State state;
-            public int profit;
+            public int totalInterest;
             public int parent;
-            public VertexData(State state, int profit, int parent)
+            public VertexData(int index, State state, int totalInterest, int parent)
             {
+                this.index = index;
                 this.state = state;
-                this.profit = profit;
+                this.totalInterest = totalInterest;
                 this.parent = parent;
+            }
+            public int Compare(VertexData left, VertexData right)
+            {
+                return left.totalInterest - right.totalInterest;
             }
         }
 
-       /* public int FindBestInQueue(List<State> states, )
+        public static List<VertexData> GetVertexDataWithMaxProfitValues(int first, LinkData linkData)
         {
-            int ans = queue[0];
-            for (int i = 0; i < queue.Count; i++)
-            return ans;
-        }*/
+            int i = 0;
+            var vertexDatas = Enumerable.Repeat(
+                new VertexData
+                (i++, State.unvisited, 0, -1), linkData.VertexNum)
+                .ToList();
+            VertexData currentVertex;
+            var queue = new SortedSet<VertexData>();
+            vertexDatas[first].state = State.enqueued;
+            vertexDatas[first].totalInterest = 7;
+            while (queue.Count > 0)
+            {
+                currentVertex = queue.Max();
+                foreach (var neighbour in linkData.IntLinks[currentVertex.index])
+                {
+                    if (vertexDatas[neighbour.slideIndex].state == State.visited)
+                        continue;
+                    if (vertexDatas[neighbour.slideIndex].state == State.unvisited)
+                    {
+                        queue.Add(vertexDatas[neighbour.slideIndex]);
+                        vertexDatas[neighbour.slideIndex].state = State.enqueued;
+                    }
+                    if (vertexDatas[currentVertex.index].totalInterest + neighbour.interest >
+                        vertexDatas[neighbour.slideIndex].totalInterest)
+                    {
+                        vertexDatas[neighbour.slideIndex].totalInterest =
+                            vertexDatas[currentVertex.index].totalInterest + neighbour.interest;
+                        vertexDatas[neighbour.slideIndex].parent = currentVertex.index;
+                    }
+                }
+                queue.Remove(currentVertex);
+                vertexDatas[currentVertex.index].state = State.visited;
+            }
+            return vertexDatas;
+        }
         public static List<int> FindBestPath(int first, LinkData linkData)
         {
-            /*var vertexDatas = Enumerable.Repeat
-                (new VertexData(State.unvisited, 0, -1), linkData.VertexNum)
-                .ToList();*/
-            var test = new VertexData(State.visited, 5, 6);
-            test.profit = 7;
-            var vertexDatas = new List<VertexData>();
-            for (int i = 0; i < linkData.VertexNum; i++)
-                vertexDatas[i] = new VertexData(State.unvisited, 0, -1);
-            var test2 = vertexDatas[first];
-            test2.profit = 7;
-            vertexDatas[first].profit = 7;
-
             var ans = new List<int>();
-            int queued = 1;
-            int current;
-            /*while(queued > 0)
-            {
-                current = FindBestInQueue();
-                foreach (var neighbour in linkData.IntLinks[current])
+            var vertexDatas = GetVertexDataWithMaxProfitValues(first, linkData);
+            int curVertex = 0;
+            int max = vertexDatas[0].totalInterest;
+            for (int i = 1; i < vertexDatas.Count; i++)
+                if (vertexDatas[i].totalInterest > max)
                 {
-                    if (states[neighbour.slide] == State.visited)
-                        continue;
-                    if (states[neighbour.slide] == State.unvisited)
-                    {
-                        states[neighbour.slide] = State.enqueued;
-                        queue.Enqueue(neighbour.slide);    
-                    }
-                    if
+                    curVertex = i;
+                    max = vertexDatas[i].totalInterest;
                 }
-            }*/
-
+            ans.Add(curVertex);
+            while (curVertex != first)
+            {
+                curVertex = vertexDatas[curVertex].parent;
+                ans.Add(curVertex);
+            }
+            ans.Reverse();
             return ans;
         }
         public static void GreedyAlgo(LinkData linkData)
@@ -120,7 +141,9 @@ namespace HashCode2019
         static void Main()
         {
             var linkData = new LinkData(DataAnalyzer.linksB, 80000);
-            GreedyAlgo(linkData);
+            //GreedyAlgo(linkData);
+            var anyAns = FindBestPath(0, linkData);
+            Tools.SaveIntAnswer(anyAns, DataAnalyzer.ansB);
             Console.WriteLine("Press any key");
             Console.Read();
         }

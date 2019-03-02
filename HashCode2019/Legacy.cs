@@ -106,7 +106,7 @@ namespace HashCode2019
             List<List<Photo>> answer = Enumerable.Repeat(new List<Photo>(), tagNums1.Count).ToList();
             var ans = ParallelCalculations(input, tagNums1);
             //List<Photo> ans = RandomPermutation(input.AllPhotos).ToList();
-            Tools.SaveAnswer(ans, ansPath);
+            Tools.SavePhotoAnswer(ans, ansPath);
             DataAnalyzer.AnalyzeAnswer(testPath, ansPath);
         }
     }
