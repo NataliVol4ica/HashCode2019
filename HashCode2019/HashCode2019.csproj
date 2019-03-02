@@ -46,6 +46,8 @@
     <Compile Include="DataAnalyzer.cs" />
     <Compile Include="InputData.cs" />
     <Compile Include="Legacy.cs" />
+    <Compile Include="Link.cs" />
+    <Compile Include="LinkData.cs" />
     <Compile Include="Photo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

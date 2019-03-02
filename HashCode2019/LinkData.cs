@@ -8,11 +8,14 @@ namespace HashCode2019
 {
     class LinkData
     {
+        #region vars
         private object intLinksMutex = new object();
         private object repeatsMutex = new object();
         public readonly int VertexNum;
         private List<List<int>> _intLinks = null;
+        #endregion
 
+        #region Properties
         private List<Pair> _repeats = null;
         public List<Link> Links { get; private set; } = new List<Link>();
         public List<List<int>> IntLinks
@@ -39,6 +42,7 @@ namespace HashCode2019
                 return _repeats;
             }
         }
+        #endregion
 
         #region Constructors
         public LinkData(int vertexNum)
