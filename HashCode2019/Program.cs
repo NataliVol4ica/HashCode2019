@@ -22,6 +22,12 @@ namespace HashCode2019
             public State state;
             public int profit;
             public int parent;
+            public VertexData(State state, int profit, int parent)
+            {
+                this.state = state;
+                this.profit = profit;
+                this.parent = parent;
+            }
         }
 
        /* public int FindBestInQueue(List<State> states, )
@@ -32,18 +38,21 @@ namespace HashCode2019
         }*/
         public static List<int> FindBestPath(int first, LinkData linkData)
         {
+            /*var vertexDatas = Enumerable.Repeat
+                (new VertexData(State.unvisited, 0, -1), linkData.VertexNum)
+                .ToList();*/
+            var test = new VertexData(State.visited, 5, 6);
+            test.profit = 7;
+            var vertexDatas = new List<VertexData>();
+            for (int i = 0; i < linkData.VertexNum; i++)
+                vertexDatas[i] = new VertexData(State.unvisited, 0, -1);
+            var test2 = vertexDatas[first];
+            test2.profit = 7;
+            vertexDatas[first].profit = 7;
+
             var ans = new List<int>();
-            var vertexDatas = Enumerable.Repeat(
-                new VertexData
-                {
-                    state = State.unvisited,
-                    profit = 0,
-                    parent = -1
-                }, linkData.VertexNum)
-                .ToList();
             int queued = 1;
             int current;
-            vertexDatas[first].state = State.enqueued;
             /*while(queued > 0)
             {
                 current = FindBestInQueue();
