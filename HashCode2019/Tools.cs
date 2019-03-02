@@ -66,7 +66,7 @@ namespace HashCode2019
         {
             using (StreamWriter sw = new StreamWriter(path))
             {
-                sw.WriteLine(ans.Count);
+                sw.WriteLine("Lines " + ans.Count);
                 foreach (var a in ans)
                     sw.WriteLine(a);
             }

@@ -89,10 +89,16 @@ namespace HashCode2019
             }
             return vertexDatas;
         }
-        public static List<int> FindBestPath(int first, LinkData linkData, List<VertexData> vertexDatas)
+        public static List<int> FindBestPath(int first, LinkData linkData, List<VertexData> vertexDatas, bool includeFirst)
         {
-            Console.WriteLine("Searching path for {0}", first);
+            //Console.WriteLine("Searching path for {0}", first);
             var ans = new List<int>();
+            for (int i = 0; i < vertexDatas.Count; i++)
+            {
+                vertexDatas[i].state = State.unvisited;
+                vertexDatas[i].parent = -1;
+                vertexDatas[i].totalInterest = 0;
+            }
             vertexDatas = GetVertexDataWithMaxProfitValues(first, linkData, vertexDatas);
             int curVertex = -1;
             int max = -1;
@@ -102,16 +108,31 @@ namespace HashCode2019
                     curVertex = i;
                     max = vertexDatas[i].totalInterest;
                 }
+            if (max == 0)
+            {
+                vertexDatas[first].isTaken = true;
+                return (ans);
+            }
             ans.Add(curVertex);
             vertexDatas[curVertex].isTaken = true;
             while (curVertex != first)
             {
-                curVertex = vertexDatas[curVertex].parent;
-                ans.Add(curVertex);
-                vertexDatas[curVertex].isTaken = true;
+                if (curVertex > 0)
+                {
+                    curVertex = vertexDatas[curVertex].parent;
+                    if (!(!includeFirst && curVertex == first))
+                    {
+                        ans.Add(curVertex);
+                        vertexDatas[curVertex].isTaken = true;
+                    }
+                }
+                else
+                {
+                    break;
+                }
             }
             ans.Reverse();
-            Console.WriteLine("Search complete.");
+            //Console.WriteLine("Search complete.");
             return ans;
         }
         public static List<int> GreedyAlgo(LinkData linkData)
@@ -146,19 +167,17 @@ namespace HashCode2019
                     continue;
                 }
                 //find first chain
-                var oneChain = FindBestPath(untaken, linkData, vertexDatas);
+                var oneChain = FindBestPath(untaken, linkData, vertexDatas, (linkData.Repeats[untaken].amount == 1));
+                ans.AddRange(oneChain);
                 if (linkData.Repeats[untaken].amount == 1)
                 {
-                    ans.AddRange(oneChain);
                     i++;
                     continue;
                 }
-                //if it has two ways, reverse it
-                oneChain.Reverse();
-                oneChain.RemoveAt(oneChain.Count - 1);
                 vertexDatas[untaken].isTaken = false;
                 //and find another chain
-                var secondchain = FindBestPath(untaken, linkData, vertexDatas);
+                var secondchain = FindBestPath(untaken, linkData, vertexDatas, true);
+                secondchain.Reverse();
                 ans.AddRange(secondchain);
             }
             Console.WriteLine("Finished");
