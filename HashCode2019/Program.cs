@@ -16,7 +16,7 @@ namespace HashCode2019
             enqueued,
             visited
         }
-        public class VertexData: IComparer<VertexData>
+        public class VertexData: IComparable<VertexData>
         {
             public int index;
             public State state;
@@ -29,9 +29,12 @@ namespace HashCode2019
                 this.totalInterest = totalInterest;
                 this.parent = parent;
             }
-            public int Compare(VertexData left, VertexData right)
+            public int CompareTo(VertexData right)
             {
-                return left.totalInterest - right.totalInterest;
+                int cmp = totalInterest - right.totalInterest;
+                if (cmp == 0)
+                    cmp = index - right.index;
+                return cmp;
             }
         }
 
@@ -46,7 +49,6 @@ namespace HashCode2019
             var queue = new SortedSet<VertexData>();
             queue.Add(vertexDatas[first]);
             vertexDatas[first].state = State.enqueued;
-            vertexDatas[first].totalInterest = 7;
             while (queue.Count > 0)
             {
                 currentVertex = queue.Max();
@@ -55,6 +57,7 @@ namespace HashCode2019
                     queue.Count);
                 foreach (var neighbour in linkData.IntLinks[currentVertex.index])
                 {
+                    Console.WriteLine("Neighbour {0}", neighbour.slideIndex);
                     if (vertexDatas[neighbour.slideIndex].state == State.visited)
                         continue;
                     if (vertexDatas[neighbour.slideIndex].state == State.unvisited)
@@ -150,6 +153,10 @@ namespace HashCode2019
             //GreedyAlgo(linkData);
             var anyAns = FindBestPath(0, linkData);
             Tools.SaveIntAnswer(anyAns, DataAnalyzer.ansB);
+            //var test = new SortedSet<IntLinkData>();
+            //test.Add(new IntLinkData(1, 1));
+            //test.Add(new IntLinkData(1, 2));
+
             Console.WriteLine("Press any key");
             Console.Read();
         }

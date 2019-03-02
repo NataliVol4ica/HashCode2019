@@ -6,10 +6,22 @@ using System.Text;
 
 namespace HashCode2019
 {
-    struct IntLinkData
+    class IntLinkData: IComparable<IntLinkData>
     {
         public int slideIndex;
         public int interest;
+        public IntLinkData(int idx, int inter)
+        {
+            slideIndex = idx;
+            interest = inter;
+        }
+        public int CompareTo(IntLinkData right)
+        {
+            int cmp = right.interest - this.interest;
+            if (cmp == 0)
+                cmp = this.slideIndex - right.slideIndex;
+            return cmp;
+        }
     }
     class LinkData
     {
@@ -17,13 +29,13 @@ namespace HashCode2019
         private object intLinksMutex = new object();
         private object repeatsMutex = new object();
         public readonly int VertexNum;
-        private List<List<IntLinkData>> _intLinks = null;
+        private List<SortedSet<IntLinkData>> _intLinks = null;
         #endregion
 
         #region Properties
         private List<Pair> _repeats = null;
         public List<Link> Links { get; private set; } = new List<Link>();
-        public List<List<IntLinkData>> IntLinks
+        public List<SortedSet<IntLinkData>> IntLinks
         {
             get
             {
@@ -67,14 +79,16 @@ namespace HashCode2019
         }
         private void LinksToListOfLists()
         {
-            _intLinks = Enumerable.Repeat(new List<IntLinkData>(), 80000).ToList();
+            Console.WriteLine("Creating int lists");
+            _intLinks = new List<SortedSet<IntLinkData>>();
+            for (int i = 0; i < VertexNum; i++)
+                _intLinks.Add(new SortedSet<IntLinkData>());
             foreach (var link in Links)
             {
-                IntLinks[link.slide1].Add(new IntLinkData { slideIndex = link.slide2, interest = link.interest });
-                IntLinks[link.slide2].Add(new IntLinkData { slideIndex = link.slide1, interest = link.interest });
+                IntLinks[link.slide1].Add(new IntLinkData(link.slide2, link.interest));
+                IntLinks[link.slide2].Add(new IntLinkData(link.slide1, link.interest));
             }
-            for (int i = 0; i < VertexNum; i++)
-                _intLinks[i] = _intLinks[i].OrderByDescending(val => val.interest).ToList();
+            Console.WriteLine("Finished");
         }
         private void CountRepeats()
         {
