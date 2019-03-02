@@ -44,11 +44,15 @@ namespace HashCode2019
                 .ToList();
             VertexData currentVertex;
             var queue = new SortedSet<VertexData>();
+            queue.Add(vertexDatas[first]);
             vertexDatas[first].state = State.enqueued;
             vertexDatas[first].totalInterest = 7;
             while (queue.Count > 0)
             {
                 currentVertex = queue.Max();
+                Console.WriteLine("Current {0} Max {1} Parent {2} | Queue size {3}",
+                    currentVertex.index, currentVertex.totalInterest, currentVertex.parent,
+                    queue.Count);
                 foreach (var neighbour in linkData.IntLinks[currentVertex.index])
                 {
                     if (vertexDatas[neighbour.slideIndex].state == State.visited)
@@ -73,6 +77,7 @@ namespace HashCode2019
         }
         public static List<int> FindBestPath(int first, LinkData linkData)
         {
+            Console.WriteLine("Searching path for {0}", first);
             var ans = new List<int>();
             var vertexDatas = GetVertexDataWithMaxProfitValues(first, linkData);
             int curVertex = 0;
@@ -90,6 +95,7 @@ namespace HashCode2019
                 ans.Add(curVertex);
             }
             ans.Reverse();
+            Console.WriteLine("Search complete.");
             return ans;
         }
         public static void GreedyAlgo(LinkData linkData)
