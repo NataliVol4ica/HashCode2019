@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace HashCode2019
 {
+    struct Pair
+    {
+        public int index;
+        public int amount;
+    }
+
     static class Tools
     {
         public static int CharToInt(char c)

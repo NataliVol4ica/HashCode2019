@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -118,6 +119,43 @@ namespace HashCode2019
                     Console.WriteLine(i);
             }
             Console.WriteLine("Total profit: {0}", totalProfit);
+        }
+        /// <summary>
+        /// Looks for pairs of photos having profit > 0
+        /// </summary>
+        public static void FindLinks(string testPath, string linkPath)
+        {
+            var input = new InputData();
+            input.Read(testPath);
+            input.OrderPhotosByFirst();
+
+            var links = new List<Link>();
+            int interest;
+            var sw = new Stopwatch();
+            sw.Start();
+            for (int i = 0; i < input.AllPhotos.Count - 1; i++)
+            {
+                for (int j = i + 1; j < input.AllPhotos.Count; j++)
+                {
+                    var left = input.AllPhotos[i];
+                    var right = input.AllPhotos[j];
+                    //because photo array is ordered by first tag
+                    if (left.Max < right.Min)
+                        break;
+                    if ((interest = Tools.CountInterest(left, right)) > 0)
+                        links.Add(new Link(left.Index, right.Index, interest));
+                }
+                if (i % 100 == 1)
+                {
+                    sw.Stop();
+                    Console.WriteLine("{0} / {1} | {2}", i, input.AllPhotos.Count - 1, sw.Elapsed);
+                    sw.Restart();
+                }
+            }
+            Console.WriteLine("Ordering the link list");
+            links = links.OrderByDescending(link => link.interest).ToList();
+            Console.WriteLine("Writing to file");
+            Tools.SaveLinkList(linkPath, links);
         }
 
         #region files
