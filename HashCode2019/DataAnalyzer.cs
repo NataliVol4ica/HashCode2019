@@ -132,38 +132,7 @@ namespace HashCode2019
         /// <summary>
         /// Looks for pairs of photos having profit > 0
         /// </summary>
-        // TODO: OPTIMISE WITH ASPARALLEL
-        public static void FindLinks(string testPath, string linkPath)
-        {
-            var links = new List<Link>();
-            int interest;
-            var sw = new Stopwatch();
-            sw.Start();
-            for (int i = 0; i < input.Slides.Count - 1; i++)
-            {
-                for (int j = i + 1; j < input.Slides.Count; j++)
-                {
-                    var left = input.Slides[i];
-                    var right = input.Slides[j];
-                    //because photo array is ordered by first tag
-                    if (left.Max < right.Min)
-                        break;
-                    if ((interest = Tools.CountInterest(left, right)) > 0)
-                        links.Add(new Link(left.Index, right.Index, interest));
-                }
-                /*if (i % 100 == 1)
-                {
-                    sw.Stop();
-                    Console.WriteLine("{0} / {1} | {2}", i, input.Slides.Count - 1, sw.Elapsed);
-                    sw.Restart();
-                }*/
-            }
-            Console.WriteLine("Ordering the link list");
-            links = links.OrderByDescending(link => link.interest).ToList();
-            Console.WriteLine("Writing to file");
-            Tools.SaveLinkList(linkPath, links);
-        }
-
+  
         #region files
         public static string pathA = @"D:\HashCode2019\a_example.txt";
         public static string pathB = @"D:\HashCode2019\b_lovely_landscapes.txt";

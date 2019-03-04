@@ -59,7 +59,6 @@ namespace HashCode2019
             min = min > rightDif ? rightDif : min;
             return min;
         }
-
         public static void SaveIntAnswer(List<int> ans, string path)
         {
             using (StreamWriter sw = new StreamWriter(path))

@@ -92,24 +92,26 @@ namespace HashCode2019
         }
         /// <summary>
         /// Creates links from Slides
-        /// </summary>
-        public LinkData(Slideshow s)
+        /// </summary>        
+        // TODO: OPTIMISE WITH ASPARALLEL    
+        public LinkData(string testName, Slideshow s)
         {
             Links = new List<Link>();
+            fileName = testName;
             int interest;
             var sw = new Stopwatch();
             sw.Start();
-            for (int i = 0; i < input.Slides.Count - 1; i++)
+            for (int i = 0; i < s.Slides.Count - 1; i++)
             {
-                for (int j = i + 1; j < input.Slides.Count; j++)
+                for (int j = i + 1; j < s.Slides.Count; j++)
                 {
-                    var left = input.Slides[i];
-                    var right = input.Slides[j];
+                    var left = s.Slides[i];
+                    var right = s.Slides[j];
                     //because photo array is ordered by first tag
                     if (left.Max < right.Min)
                         break;
                     if ((interest = Tools.CountInterest(left, right)) > 0)
-                        links.Add(new Link(left.Index, right.Index, interest));
+                        Links.Add(new Link(left.Index, right.Index, interest));
                 }
                 /*if (i % 100 == 1)
                 {
@@ -119,9 +121,8 @@ namespace HashCode2019
                 }*/
             }
             Console.WriteLine("Ordering the link list");
-            links = links.OrderByDescending(link => link.interest).ToList();
+            Links = Links.OrderByDescending(link => link.interest).ToList();
             Console.WriteLine("Writing to file");
-            Tools.SaveLinkList(linkPath, links);
         }
         #endregion
         private void LinksToListOfLists()

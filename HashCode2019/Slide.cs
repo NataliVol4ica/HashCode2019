@@ -12,7 +12,6 @@ namespace HashCode2019
     {
         static int _indexCounter = 0;
         public int Index { get; private set; }
-
         public enum SlideOrientation
         {
             Horizontal = 0,
