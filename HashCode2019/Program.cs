@@ -18,9 +18,9 @@ namespace HashCode2019
             s.ParseDataIntoSlides(id);
             s.OrderSlidesByFirstTag();
             s.SaveSlidesToFile();
-            s.ReadSlidesFromFile();
-            LinkData ld = new LinkData("c", s);
-            ld.SaveLinksToFile();
+            //s.ReadSlidesFromFile();
+            //LinkData ld = new LinkData("c", s);
+            //ld.SaveLinksToFile();
 
 
             /*var linkData = new LinkData(DataAnalyzer.linksB, 80000);

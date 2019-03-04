@@ -93,35 +93,46 @@ namespace HashCode2019
         /// <summary>
         /// Creates links from Slides
         /// </summary>        
-        // TODO: OPTIMISE WITH ASPARALLEL    
-        public LinkData(string testName, Slideshow s)
+        public LinkData(string testName, Slideshow slideshow)
         {
             Links = new List<Link>();
             fileName = testName;
             int interest;
             var sw = new Stopwatch();
             sw.Start();
-            for (int i = 0; i < s.Slides.Count - 1; i++)
+            int i_s = 0;
+            var indexedSlides = slideshow.Slides.Select(slide => new { Index = i_s++, Slide = slide });
+            var midLinks = indexedSlides
+                .AsParallel()
+                .Select(l =>
             {
-                for (int j = i + 1; j < s.Slides.Count; j++)
+                int i = l.Index;
+                var left = l.Slide;
+                var midList = new List<Link>();
+                for (int j = i + 1; j < slideshow.Slides.Count; j++)
                 {
-                    var left = s.Slides[i];
-                    var right = s.Slides[j];
+                    var right = slideshow.Slides[j];
                     //because photo array is ordered by first tag
                     if (left.Max < right.Min)
                         break;
                     if ((interest = Tools.CountInterest(left, right)) > 0)
-                        Links.Add(new Link(left.Index, right.Index, interest));
+                        midList.Add(new Link(left.Index, right.Index, interest));
                 }
-                /*if (i % 100 == 1)
+                if (i % 100 == 1)
                 {
                     sw.Stop();
-                    Console.WriteLine("{0} / {1} | {2}", i, input.Slides.Count - 1, sw.Elapsed);
+                    Console.WriteLine("{0} / {1} | {2}", i, slideshow.Slides.Count - 1, sw.Elapsed);
                     sw.Restart();
-                }*/
-            }
+                }
+                i++;
+                return midList;
+            })
+                .ToList();
             Console.WriteLine("Ordering the link list");
-            Links = Links.OrderByDescending(link => link.interest).ToList();
+            Links = midLinks
+                .SelectMany(list => list)
+                .OrderByDescending(link => link.interest)
+                .ToList();
             Console.WriteLine("Writing to file");
         }
         #endregion
