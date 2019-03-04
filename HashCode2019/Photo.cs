@@ -6,21 +6,17 @@ using System.Text;
 
 namespace HashCode2019
 {
-    class Photo
+    class Photo : TagContainer
     {
         #region Properties
         public bool IsHorizontal { get; private set; }
-        public int Index { get; private set; }
-        public int NumOfTags { get; private set; }
-        public long Min { get; private set; }
-        public long Max { get; private set; }
-        public List<long> IntTags { get; private set; }
+        public int Index { get; private set; }      
         public List<string> StringTags { get; private set; }
         #endregion
 
         public Photo(int index)
         {
-            IntTags = new List<long>();
+            Tags = new List<long>();
             StringTags = new List<string>();
             Index = index;           
         }
@@ -33,11 +29,11 @@ namespace HashCode2019
             for (int i = 2; i < data.Count(); i++)
             {
                 StringTags.Add(data[i]);
-                IntTags.Add(Tools.TagToInt(data[i]));
+                Tags.Add(Tools.TagToInt(data[i]));
             }
-            IntTags = IntTags.OrderBy(num => num).ToList();
-            Min = IntTags.First();
-            Max = IntTags.Last();
+            Tags = Tags.OrderBy(num => num).ToList();
+            Min = Tags.First();
+            Max = Tags.Last();
         }
 
     }

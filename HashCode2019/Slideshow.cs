@@ -69,7 +69,7 @@ namespace HashCode2019
         }
         public void OrderSlidesByFirstTag()
         {
-            Slides = Slides.OrderBy(slide => slide.IntTags[0]).ToList();
+            Slides = Slides.OrderBy(slide => slide.Tags[0]).ToList();
         }
 
         #region Algo       

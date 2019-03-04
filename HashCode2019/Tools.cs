@@ -31,15 +31,15 @@ namespace HashCode2019
             a = b;
             b = c;
         }
-        public static int CountSameTags(Photo left, Photo right)
+        public static int CountSameTags(TagContainer left, TagContainer right)
         {
             int ans = 0;
             int i = 0, j = 0;
-            while (i < left.IntTags.Count && j < right.IntTags.Count)
+            while (i < left.Tags.Count && j < right.Tags.Count)
             {
-                if (left.IntTags[i] < right.IntTags[j])
+                if (left.Tags[i] < right.Tags[j])
                     i++;
-                else if (right.IntTags[j] < left.IntTags[i])
+                else if (right.Tags[j] < left.Tags[i])
                     j++;
                 else
                 {
@@ -50,16 +50,16 @@ namespace HashCode2019
             }
             return ans;
         }
-        public static int CountInterest(Photo p1, Photo p2)
+        public static int CountInterest(TagContainer tc1, TagContainer tc2)
         {
-            int intersec = CountSameTags(p1, p2);
-            int leftDif = p1.NumOfTags - intersec;
-            int rightDif = p2.NumOfTags - intersec;
+            int intersec = CountSameTags(tc1, tc2);
+            int leftDif = tc1.NumOfTags - intersec;
+            int rightDif = tc2.NumOfTags - intersec;
             int min = intersec > leftDif ? leftDif : intersec;
             min = min > rightDif ? rightDif : min;
             return min;
         }
-        
+
         public static void SaveIntAnswer(List<int> ans, string path)
         {
             using (StreamWriter sw = new StreamWriter(path))

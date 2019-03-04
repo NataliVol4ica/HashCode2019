@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
 using System.Text;
 
 namespace HashCode2019
@@ -94,10 +95,33 @@ namespace HashCode2019
         /// </summary>
         public LinkData(Slideshow s)
         {
-            string path = DataAnalyzer.path + fileName + "_links.txt";
             Links = new List<Link>();
-            throw new NotImplementedException();
-            //generate links here
+            int interest;
+            var sw = new Stopwatch();
+            sw.Start();
+            for (int i = 0; i < input.Slides.Count - 1; i++)
+            {
+                for (int j = i + 1; j < input.Slides.Count; j++)
+                {
+                    var left = input.Slides[i];
+                    var right = input.Slides[j];
+                    //because photo array is ordered by first tag
+                    if (left.Max < right.Min)
+                        break;
+                    if ((interest = Tools.CountInterest(left, right)) > 0)
+                        links.Add(new Link(left.Index, right.Index, interest));
+                }
+                /*if (i % 100 == 1)
+                {
+                    sw.Stop();
+                    Console.WriteLine("{0} / {1} | {2}", i, input.Slides.Count - 1, sw.Elapsed);
+                    sw.Restart();
+                }*/
+            }
+            Console.WriteLine("Ordering the link list");
+            links = links.OrderByDescending(link => link.interest).ToList();
+            Console.WriteLine("Writing to file");
+            Tools.SaveLinkList(linkPath, links);
         }
         #endregion
         private void LinksToListOfLists()
