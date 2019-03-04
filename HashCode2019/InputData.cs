@@ -11,16 +11,13 @@ namespace HashCode2019
     {
         public List<Photo> Horizontals;
         public List<Photo> Verticals;
-        public List<Photo> AllPhotos;
         public int Count;
 
         public InputData()
         {
             Horizontals = new List<Photo>();
             Verticals = new List<Photo>();
-            AllPhotos = new List<Photo>();
         }
-
         public void Read(string path)
         {
             using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
@@ -29,9 +26,8 @@ namespace HashCode2019
                 for (int i = 0; i < Count; i++)
                     AddPhoto(sr.ReadLine(), i);
             }
-        }
-        
-        public void AddPhoto(string line, int index)
+        }        
+        void AddPhoto(string line, int index)
         {
             var P = new Photo(index);
             P.ParseLine(line);
@@ -39,12 +35,6 @@ namespace HashCode2019
                 Horizontals.Add(P);
             else
                 Verticals.Add(P);
-            AllPhotos.Add(P);
-        }
-
-        public void OrderPhotosByFirst()
-        {
-            AllPhotos = AllPhotos.OrderBy(photo => photo.IntTags[0]).ToList();
         }
     }
 }

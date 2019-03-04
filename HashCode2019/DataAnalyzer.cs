@@ -20,7 +20,16 @@ namespace HashCode2019
             int illegals = 0;
             var input = new InputData();
             input.Read(path);
-            foreach (var photo in input.AllPhotos)
+            foreach (var photo in input.Horizontals)
+            {
+                foreach (var tag in photo.StringTags)
+                {
+                    foreach (var c in tag)
+                        if (!(char.IsDigit(c) || char.IsLower(c)))
+                            illegals++;
+                }
+            }
+            foreach (var photo in input.Verticals)
             {
                 foreach (var tag in photo.StringTags)
                 {
@@ -123,34 +132,31 @@ namespace HashCode2019
         /// <summary>
         /// Looks for pairs of photos having profit > 0
         /// </summary>
+        // TODO: OPTIMISE WITH ASPARALLEL
         public static void FindLinks(string testPath, string linkPath)
         {
-            var input = new InputData();
-            input.Read(testPath);
-            input.OrderPhotosByFirst();
-
             var links = new List<Link>();
             int interest;
             var sw = new Stopwatch();
             sw.Start();
-            for (int i = 0; i < input.AllPhotos.Count - 1; i++)
+            for (int i = 0; i < input.Slides.Count - 1; i++)
             {
-                for (int j = i + 1; j < input.AllPhotos.Count; j++)
+                for (int j = i + 1; j < input.Slides.Count; j++)
                 {
-                    var left = input.AllPhotos[i];
-                    var right = input.AllPhotos[j];
+                    var left = input.Slides[i];
+                    var right = input.Slides[j];
                     //because photo array is ordered by first tag
                     if (left.Max < right.Min)
                         break;
                     if ((interest = Tools.CountInterest(left, right)) > 0)
                         links.Add(new Link(left.Index, right.Index, interest));
                 }
-                if (i % 100 == 1)
+                /*if (i % 100 == 1)
                 {
                     sw.Stop();
-                    Console.WriteLine("{0} / {1} | {2}", i, input.AllPhotos.Count - 1, sw.Elapsed);
+                    Console.WriteLine("{0} / {1} | {2}", i, input.Slides.Count - 1, sw.Elapsed);
                     sw.Restart();
-                }
+                }*/
             }
             Console.WriteLine("Ordering the link list");
             links = links.OrderByDescending(link => link.interest).ToList();
@@ -165,14 +171,7 @@ namespace HashCode2019
         public static string pathD = @"D:\HashCode2019\d_pet_pictures.txt";
         public static string pathE = @"D:\HashCode2019\e_shiny_selfies.txt";
 
-        public static string ansA = @"D:\HashCode2019\a_ans.txt";
-        public static string ansB = @"D:\HashCode2019\b_ans.txt";
-        public static string ansC = @"D:\HashCode2019\c_ans.txt";
-        public static string ansD = @"D:\HashCode2019\d_ans.txt";
-        public static string ansE = @"D:\HashCode2019\e_ans.txt";
-
-
-        public static string linksB = @"D:\HashCode2019\b_links.txt";
+        public static string path = @"D:\HashCode2019\";
         #endregion
 
     }

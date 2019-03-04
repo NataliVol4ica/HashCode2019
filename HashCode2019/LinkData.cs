@@ -6,35 +6,53 @@ using System.Text;
 
 namespace HashCode2019
 {
-    class IntLinkData: IComparable<IntLinkData>
-    {
-        public int slideIndex;
-        public int interest;
-        public IntLinkData(int idx, int inter)
-        {
-            slideIndex = idx;
-            interest = inter;
-        }
-        public int CompareTo(IntLinkData right)
-        {
-            int cmp = right.interest - this.interest;
-            if (cmp == 0)
-                cmp = this.slideIndex - right.slideIndex;
-            return cmp;
-        }
-    }
+    /// <summary>
+    /// Info about all provided links
+    /// </summary>
     class LinkData
     {
+        #region Nested Stuff
+        /// <summary>
+        /// Info about number of repeats of vertexes
+        /// </summary>
+        public struct RepeatInfo
+        {
+            public int index;
+            public int amount;
+        }
+        /// <summary>
+        /// Info about slide interest by index
+        /// </summary>
+        public class IntLinkData : IComparable<IntLinkData>
+        {
+            public int slideIndex;
+            public int interest;
+            public IntLinkData(int idx, int inter)
+            {
+                slideIndex = idx;
+                interest = inter;
+            }
+            public int CompareTo(IntLinkData right)
+            {
+                int cmp = right.interest - this.interest;
+                if (cmp == 0)
+                    cmp = this.slideIndex - right.slideIndex;
+                return cmp;
+            }
+        }
+        #endregion
+
         #region vars
-        private object intLinksMutex = new object();
-        private object repeatsMutex = new object();
+        private readonly object intLinksMutex = new object();
+        private readonly object repeatsMutex = new object();
         public readonly int VertexNum;
+        private List<RepeatInfo> _repeats = null;
         private List<SortedSet<IntLinkData>> _intLinks = null;
         #endregion
 
         #region Properties
-        private List<Pair> _repeats = null;
-        public List<Link> Links { get; private set; } = new List<Link>();
+        public string fileName;
+        public List<Link> Links { get; private set; }
         public List<SortedSet<IntLinkData>> IntLinks
         {
             get
@@ -47,7 +65,7 @@ namespace HashCode2019
                 return _intLinks;
             }
         }
-        public List<Pair> Repeats
+        public List<RepeatInfo> Repeats
         {
             get
             {
@@ -62,21 +80,26 @@ namespace HashCode2019
         #endregion
 
         #region Constructors
-        public LinkData(int vertexNum)
+        /// <summary>
+        /// Reads links from file
+        /// </summary>
+        public LinkData(string testName)
         {
-            VertexNum = vertexNum;
+            Links = new List<Link>();
+            fileName = testName;
+            ReadLinksFromFile();
         }
-        public LinkData(string path, int vertexNum)
+        /// <summary>
+        /// Creates links from Slides
+        /// </summary>
+        public LinkData(Slideshow s)
         {
-            VertexNum = vertexNum;
-            Links = LinkListFromFile(path);
+            string path = DataAnalyzer.path + fileName + "_links.txt";
+            Links = new List<Link>();
+            throw new NotImplementedException();
+            //generate links here
         }
         #endregion
-
-        public void AddLink(Link l)
-        {
-            Links.Add(l);
-        }
         private void LinksToListOfLists()
         {
             Console.WriteLine("Creating int lists");
@@ -98,48 +121,25 @@ namespace HashCode2019
                 flatRepeats[link.slide1]++;
                 flatRepeats[link.slide2]++;
             }
-            _repeats = new List<Pair>();
+            _repeats = new List<RepeatInfo>();
             for (int i = 0; i < VertexNum; i++)
-                _repeats.Add(new Pair { index = i, amount = flatRepeats[i] });
+                _repeats.Add(new RepeatInfo { index = i, amount = flatRepeats[i] });
             _repeats = _repeats
                 .OrderBy(pair => pair.amount)
                 .ThenBy(pair => pair.index)
                 .ToList();
         }
-        public void PrintRepeatsToTemp()
-        {
-            using (StreamWriter sw = new StreamWriter(@"D:\HashCode2019\temp.txt"))
-            {
-                sw.WriteLine(_repeats.Count);
-                for (int i = 0; i < 80000; i++)
-                    sw.WriteLine("{0} x {1}", _repeats[i].index, _repeats[i].amount);
-            }
-        }
 
-        public static void OrderLinks(string path)
+        #region IO
+        private void ReadLinksFromFile()
         {
-            var links = LinkListFromFile(path);
-            foreach(var link in links)
-            {
-                if (link.slide1 > link.slide2)
-                    Tools.Swap(ref link.slide1, ref link.slide2);
-            }
-            Tools.SaveLinkList(path,
-                links
-                .OrderBy(link => link.interest)
-                .ThenBy(link => link.slide1)
-                .ThenBy(link => link.slide2)
-                .ToList());
-        }
-        public static List<Link> LinkListFromFile(string path)
-        {
-            var links = new List<Link>();
+            string path = DataAnalyzer.path + fileName + "_links.txt";
             using (StreamReader sr = new StreamReader(path))
             {
                 int lineNumber = Convert.ToInt32(sr.ReadLine());
                 for (int i = 0; i < lineNumber; i++)
                 {
-                    links.Add(new Link(
+                    Links.Add(new Link(
                         sr.ReadLine()
                         .Split(' ')
                         .Where(val => !String.IsNullOrEmpty(val))
@@ -147,7 +147,27 @@ namespace HashCode2019
                         .ToArray()));
                 }
             }
-            return links;
         }
+        public void SaveRepeatsToFile()
+        {
+            string path = DataAnalyzer.path + fileName + "_repeats.txt";
+            using (StreamWriter sw = new StreamWriter(path))
+            {
+                sw.WriteLine(_repeats.Count);
+                for (int i = 0; i < 80000; i++)
+                    sw.WriteLine("{0} x {1}", _repeats[i].index, _repeats[i].amount);
+            }
+        }
+        public void SaveLinksToFile()
+        {
+            string path = DataAnalyzer.path + fileName + "_links.txt";
+            using (StreamWriter sw = new StreamWriter(path))
+            {
+                sw.WriteLine(Links.Count);
+                foreach (var link in Links)
+                    sw.WriteLine(link);
+            }
+        }
+        #endregion
     }
 }

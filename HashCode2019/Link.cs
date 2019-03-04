@@ -2,6 +2,9 @@
 
 namespace HashCode2019
 {
+    /// <summary>
+    /// Links of slides having interest > 0
+    /// </summary>
     class Link
     {
         public int slide1;
