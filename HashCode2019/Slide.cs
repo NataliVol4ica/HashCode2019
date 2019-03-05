@@ -43,7 +43,7 @@ namespace HashCode2019
         {
             Orientation = orient;
             NumOfTags = tagNum;
-            Tags = tags;
+            Tags = tags.OrderBy(tag => tag).ToList();
             Photos = photos;
         }
         public string ToLogString()

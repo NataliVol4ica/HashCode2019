@@ -84,10 +84,11 @@ namespace HashCode2019
         /// <summary>
         /// Reads links from file
         /// </summary>
-        public LinkData(string testName)
+        public LinkData(string testName, int VertexNum)
         {
             Links = new List<Link>();
             fileName = testName;
+            this.VertexNum = VertexNum;
             ReadLinksFromFile();
         }
         /// <summary>
@@ -97,6 +98,7 @@ namespace HashCode2019
         {
             Links = new List<Link>();
             fileName = testName;
+            this.VertexNum = slideshow.Slides.Count;
             int interest;
             var sw = new Stopwatch();
             sw.Start();

@@ -48,7 +48,7 @@ namespace HashCode2019
         #endregion
 
         private readonly string fileName;
-        public LinkData linkData { get; private set; }
+        public LinkData LinkDatas { get; private set; }
         public List<Slide> Slides { get; private set; }
         public List<int> SlideShow { get; private set; }
         public Slideshow(string testName)
@@ -64,8 +64,48 @@ namespace HashCode2019
         public void ParseDataIntoSlides(InputData data)
         {
             Slides.AddRange(data.Horizontals.Select(photo => new Slide(photo)).ToList());
-            throw new NotImplementedException();
-            //parse verticals here
+            data.Verticals = data.Verticals
+                .OrderByDescending(photo => photo.NumOfTags)
+                .ThenByDescending(photo => photo.Min)
+                .ThenByDescending(photo => photo.Max)
+                .ToList();
+            var added = Enumerable.Repeat(false, data.Verticals.Count).ToList();
+            //add slides with min difference
+            for (int i = 0; i < data.Verticals.Count - 1; i++)
+            {
+                if (added[i])
+                    continue;
+                int minFit = data.Verticals[i].NumOfTags + 1;
+                int fitIndex = -1;
+                for (int j = i + 1; j < data.Verticals.Count; j++)
+                {
+                    if (added[j])
+                        continue;
+                    if (data.Verticals[i].Min > data.Verticals[j].Max)
+                    {
+                        minFit = -1;
+                        added[i] = true;
+                        added[j] = true;
+                        Slides.Add(new Slide(data.Verticals[i], data.Verticals[j]));
+                        break;
+                    }
+                    int sameTags = Tools.CountSameTags(data.Verticals[i], data.Verticals[j], minFit);
+                    if (sameTags >= 0 && sameTags < minFit)
+                    {
+                        minFit = sameTags;
+                        fitIndex = j;
+                        if (sameTags == 0)
+                            break;
+                    }
+                }
+                if (minFit >= 0 && minFit <= data.Verticals[i].NumOfTags)
+                {
+                    added[i] = true;
+                    added[fitIndex] = true;
+                    Slides.Add(new Slide(data.Verticals[i], data.Verticals[fitIndex]));
+                }
+            }
+            //create pairs of photos
         }
         public void OrderSlidesByFirstTag()
         {

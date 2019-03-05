@@ -11,7 +11,7 @@ namespace HashCode2019
    //change saving path only to name of test
     static class Tools
     {
-        static Random random = new Random();
+        private static readonly Random random = new Random();
         static int CharToInt(char c)
         {
             if (char.IsDigit(c))
@@ -31,7 +31,7 @@ namespace HashCode2019
             a = b;
             b = c;
         }
-        public static int CountSameTags(TagContainer left, TagContainer right)
+        public static int CountSameTags(TagContainer left, TagContainer right, int stopAt = -1)
         {
             int ans = 0;
             int i = 0, j = 0;
@@ -47,6 +47,8 @@ namespace HashCode2019
                     j++;
                     ans++;
                 }
+                if (ans == stopAt)
+                    return -1;
             }
             return ans;
         }
