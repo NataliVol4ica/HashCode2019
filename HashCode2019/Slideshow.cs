@@ -48,7 +48,7 @@ namespace HashCode2019
         #endregion
 
         private readonly string fileName;
-        public LinkData LinkDatas { get; private set; }
+        public int VertexNum { get; private set; }
         public List<Slide> Slides { get; private set; }
         public List<int> SlideShow { get; private set; }
         public Slideshow(string testName)
@@ -105,7 +105,7 @@ namespace HashCode2019
                     Slides.Add(new Slide(data.Verticals[i], data.Verticals[fitIndex]));
                 }
             }
-            //create pairs of photos
+            VertexNum = Slides.Count;
         }
         public void OrderSlidesByFirstTag()
         {
@@ -136,10 +136,12 @@ namespace HashCode2019
         public void ReadSlidesFromFile()
         {
             Slides = new List<Slide>();
+            Slide.RestartIndexCounter();
             string path = DataAnalyzer.path + fileName + "_slides.txt";
             using (StreamReader sr = new StreamReader(path))
             {
                 int lineNumber = Convert.ToInt32(sr.ReadLine());
+                VertexNum = lineNumber;
                 for (int i = 0; i < lineNumber; i++)
                 {
                     var vals = sr.ReadLine()
@@ -263,7 +265,7 @@ namespace HashCode2019
                     ans.Add(curVertex);
                     vertexDatas[curVertex].isTaken = true;
                 }
-                Console.WriteLine("Added {0}", curVertex);
+                //Console.WriteLine("Added {0}", curVertex);
             }
             //Console.WriteLine("Search complete.");
             return ans;
@@ -283,20 +285,9 @@ namespace HashCode2019
                 //if no unchecked vertexes left
                 if (untaken == -1)
                     break;
-                //if vertex has no profitable neighbours
-                if (linkData.Repeats[untaken].amount < 1)
-                {
-                    vertexDatas[untaken].isTaken = true;
-                    continue;
-                }
                 //find first chain
                 var oneChain = FindBestPath(untaken, linkData, vertexDatas, (linkData.Repeats[untaken].amount == 1));
                 SlideShow.AddRange(oneChain);
-                if (linkData.Repeats[untaken].amount == 1)
-                {
-                    vertexDatas[untaken].isTaken = true;
-                    continue;
-                }
                 vertexDatas[untaken].isTaken = false;
                 //and find another chain
                 var secondchain = FindBestPath(untaken, linkData, vertexDatas, true);

@@ -12,20 +12,24 @@ namespace HashCode2019
     {
        static void Main()
         {
-            string testname = "d";
+            string testname = "b";
             Slideshow s = new Slideshow(testname);
-            InputData id = new InputData();
-            id.Read(DataAnalyzer.pathD);
+            /*
+             InputData id = new InputData();
+            id.Read(DataAnalyzer.pathB);
             s.ParseDataIntoSlides(id);
             s.OrderSlidesByFirstTag();
             s.SaveSlidesToFile();
+            */
             s.ReadSlidesFromFile();
             LinkData ld = new LinkData(testname, s);
-            s.GenerateSlideShow(ld);
-            s.SaveAnsToFile();
-            //ld.SaveLinksToFile();
 
-
+            ld.SaveLinksToFile();
+            /*s.GenerateSlideShow(ld);
+            s.SaveAnsToFile();*/
+            int interestLink = Tools.CountInterest(s.Slides[ld.Links[0].slide1], s.Slides[ld.Links[0].slide1]);
+            Console.WriteLine("Interest {0} Nominated {1}", interestLink, ld.Links[0].interest);
+            
             /*var linkData = new LinkData(DataAnalyzer.linksB, 80000);
             var result = GreedyAlgo(linkData);
             Tools.SaveIntAnswer(result, DataAnalyzer.ansB);

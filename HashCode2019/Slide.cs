@@ -41,10 +41,13 @@ namespace HashCode2019
         }
         public Slide(SlideOrientation orient, List<int> photos, int tagNum, List<long> tags)
         {
+            Index = _indexCounter++;
             Orientation = orient;
             NumOfTags = tagNum;
             Tags = tags.OrderBy(tag => tag).ToList();
             Photos = photos;
+            Min = Tags.First();
+            Max = Tags.Last();
         }
         public string ToLogString()
         {
@@ -61,6 +64,11 @@ namespace HashCode2019
             if (Photos.Count == 1)
                 return Photos[0].ToString();
             return Photos[0].ToString() + " " + Photos[1].ToString();
+        }
+
+        public static void RestartIndexCounter()
+        {
+            _indexCounter = 0;
         }
     }
 }
