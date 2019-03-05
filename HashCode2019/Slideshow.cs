@@ -135,6 +135,7 @@ namespace HashCode2019
         }
         public void ReadSlidesFromFile()
         {
+            Slides = new List<Slide>();
             string path = DataAnalyzer.path + fileName + "_slides.txt";
             using (StreamReader sr = new StreamReader(path))
             {

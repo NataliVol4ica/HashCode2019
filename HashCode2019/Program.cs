@@ -12,14 +12,17 @@ namespace HashCode2019
     {
        static void Main()
         {
-            Slideshow s = new Slideshow("c");
+            string testname = "d";
+            Slideshow s = new Slideshow(testname);
             InputData id = new InputData();
-            id.Read(DataAnalyzer.pathC);
+            id.Read(DataAnalyzer.pathD);
             s.ParseDataIntoSlides(id);
             s.OrderSlidesByFirstTag();
             s.SaveSlidesToFile();
-            //s.ReadSlidesFromFile(s.V);
-            //LinkData ld = new LinkData("c", s);
+            s.ReadSlidesFromFile();
+            LinkData ld = new LinkData(testname, s);
+            s.GenerateSlideShow(ld);
+            s.SaveAnsToFile();
             //ld.SaveLinksToFile();
 
 
