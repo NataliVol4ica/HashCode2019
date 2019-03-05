@@ -103,7 +103,7 @@ namespace HashCode2019
             var sw = new Stopwatch();
             sw.Start();
             int i_s = 0;
-            var indexedSlides = slideshow.Slides.Select(slide => new { Index = i_s++, Slide = slide });
+            var indexedSlides = slideshow.Slides.Select(slide => new { Index = i_s++, Slide = slide }).ToList();
             var midLinks = indexedSlides
                 .AsParallel()
                 .Select(l =>
@@ -111,14 +111,14 @@ namespace HashCode2019
                 int i = l.Index;
                 var left = l.Slide;
                 var midList = new List<Link>();
-                for (int j = i + 1; j < slideshow.Slides.Count; j++)
+                for (int j = i + 1; j < indexedSlides.Count; j++)
                 {
                     var right = slideshow.Slides[j];
                     //because photo array is ordered by first tag
                     if (left.Max < right.Min)
                         break;
                     if ((interest = Tools.CountInterest(left, right)) > 0)
-                        midList.Add(new Link(left.Index, right.Index, interest));
+                        midList.Add(new Link(i, j, interest)); //change to i and j, or...
                 }
                 if (i % 100 == 1)
                 {

@@ -10,8 +10,6 @@ namespace HashCode2019
     //todo: make all algorithms work only with slides
     class Slide : TagContainer
     {
-        static int _indexCounter = 0;
-        public int Index { get; private set; }
         public enum SlideOrientation
         {
             Horizontal = 0,
@@ -21,7 +19,6 @@ namespace HashCode2019
         public List<int> Photos { get; private set; }
         public Slide(Photo p)
         {
-            Index = _indexCounter++;
             Orientation = SlideOrientation.Horizontal;
             Photos = new List<int>() { p.Index };
             Tags = new List<long>(p.Tags);
@@ -31,7 +28,6 @@ namespace HashCode2019
         }
         public Slide(Photo p1, Photo p2)
         {
-            Index = _indexCounter++;
             Orientation = SlideOrientation.Vertical;
             Photos = new List<int>() { p1.Index, p2.Index };
             Tags = p1.Tags.Union(p2.Tags).OrderBy(tag => tag).ToList();
@@ -41,7 +37,6 @@ namespace HashCode2019
         }
         public Slide(SlideOrientation orient, List<int> photos, int tagNum, List<long> tags)
         {
-            Index = _indexCounter++;
             Orientation = orient;
             NumOfTags = tagNum;
             Tags = tags.OrderBy(tag => tag).ToList();
@@ -64,11 +59,6 @@ namespace HashCode2019
             if (Photos.Count == 1)
                 return Photos[0].ToString();
             return Photos[0].ToString() + " " + Photos[1].ToString();
-        }
-
-        public static void RestartIndexCounter()
-        {
-            _indexCounter = 0;
         }
     }
 }

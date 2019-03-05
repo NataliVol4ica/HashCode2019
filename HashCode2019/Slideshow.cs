@@ -136,7 +136,7 @@ namespace HashCode2019
         public void ReadSlidesFromFile()
         {
             Slides = new List<Slide>();
-            Slide.RestartIndexCounter();
+            //Slide.RestartIndexCounter();
             string path = DataAnalyzer.path + fileName + "_slides.txt";
             using (StreamReader sr = new StreamReader(path))
             {
@@ -148,13 +148,13 @@ namespace HashCode2019
                         .Split(' ')
                         .Where(val => !String.IsNullOrEmpty(val))
                         .ToList();
-                    var photos = new List<int> { Convert.ToInt32(vals[1]) };
                     var orient = vals[0] == "H" ?
                         Slide.SlideOrientation.Horizontal :
-                        Slide.SlideOrientation.Vertical; 
-                    int from = vals[0] == "H" ? 2 : 3;
-                    if (from == 3)
+                        Slide.SlideOrientation.Vertical;
+                    var photos = new List<int> { Convert.ToInt32(vals[1]) };
+                    if (orient == Slide.SlideOrientation.Vertical)
                         photos.Add(Convert.ToInt32(vals[2]));
+                    int from = orient == Slide.SlideOrientation.Horizontal ? 2 : 3;
                     int size = Convert.ToInt32(vals[from++]);
                     int j = 0;
                     var tags = vals.Where(str => j++ >= from).Select(str => Convert.ToInt64(str)).ToList();
@@ -189,7 +189,7 @@ namespace HashCode2019
             }
             return untaken;
         }
-        private void FillVertexDatasWithProfit(
+        private List<VertexData> FillVertexDatasWithProfit(
             int first, LinkData linkData, List<VertexData> vertexDatas)
         {
             VertexData currentVertex;
@@ -216,9 +216,12 @@ namespace HashCode2019
                         queue.Add(vertexDatas[neighbour.slideIndex]);
                         vertexDatas[neighbour.slideIndex].state = VertexState.enqueued;
                     }
+
                     if (vertexDatas[currentVertex.index].totalInterest + neighbour.interest >
                         vertexDatas[neighbour.slideIndex].totalInterest)
                     {
+                        if (neighbour.interest == 0)
+                            Console.WriteLine(">>>>>>>>>Wait a minute.....<<<<<<<<<");
                         queue.Remove(vertexDatas[neighbour.slideIndex]);
                         vertexDatas[neighbour.slideIndex].totalInterest =
                             vertexDatas[currentVertex.index].totalInterest + neighbour.interest;
@@ -232,8 +235,9 @@ namespace HashCode2019
                 }
                 vertexDatas[currentVertex.index].state = VertexState.visited;
             }
+            return vertexDatas;
         }
-        private void FillVertexDatas(int first, LinkData linkData, List<VertexData> vertexDatas)
+        private List<VertexData> FillVertexDatas(int first, LinkData linkData, List<VertexData> vertexDatas)
         {
             foreach (var vertex in vertexDatas)
             {
@@ -241,14 +245,15 @@ namespace HashCode2019
                 vertex.parent = -1;
                 vertex.totalInterest = 0;
             }
-            FillVertexDatasWithProfit(first, linkData, vertexDatas);
+            vertexDatas = FillVertexDatasWithProfit(first, linkData, vertexDatas);
+            return vertexDatas;
         }
         private List<int> FindBestPath(
             int first, LinkData linkData, List<VertexData> vertexDatas, bool includeFirst)
         {
-            //Console.WriteLine("Searching path for {0}", first);
+            Console.WriteLine("Searching path for {0}", first);
             var ans = new List<int>();
-            FillVertexDatas(first, linkData, vertexDatas);
+            vertexDatas = FillVertexDatas(first, linkData, vertexDatas);
             FindMaxInterestVertex(vertexDatas, out int curVertex, out int max);
             if (max == 0)
             {
